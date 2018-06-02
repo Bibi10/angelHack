@@ -9,7 +9,7 @@ contract producer is ERC20 {
 
     constructor() public
     {
-        balances[msg.sender]
+        balances[msg.sender];
         
     }
     
