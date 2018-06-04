@@ -6,6 +6,7 @@ import "./SafeMath.sol";
 contract producer is ERC20 {
 
     mapping(address => uint256) public balances;
+    mapping(address=>mapping(address=>uint256)) internal allowed;
 
     constructor() public
     {
@@ -13,21 +14,23 @@ contract producer is ERC20 {
         
     }
     
-    event Transfer(address _from, address _to, uint256 _value);
+    event Approval(address _from, address _to, uint256 _value);
     
     function balanceOf(address _address) public view returns(uint256)
     {
         return balances[_address];
     }
-    function transfer(address _to, uint256 _value) public returns(bool)
+    
+    function approve(address _spender, uint256 _value) public returns(bool)
     {
-        require(balances[msg.sender] >= _value);
-        require(balances[_to] + _value >= balances[_to]); 
-        balances[_to] += _value;
-        balances[msg.sender] -= _value;
-        emit Transfer(msg.sender, _to, _value);
-        
-        return true;
+      allowed[msg.sender][_spender] = _value;
+        Approval(msg.sender, _spender, _value);
+       return true;
+    }
+    function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
+     allowed[msg.sender][_spender] = SafeMath.add(allowed[msg.sender][_spender], _addedValue);
+     Approval(msg.sender, _spender, allowed[msg.sender][_spender]);
+       return true;
     }
   
 
